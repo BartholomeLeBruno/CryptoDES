@@ -142,5 +142,8 @@ def recupConstantesDES():
             col += 1
     return X
 
+def MatZero(x, y):
+    return [[0] * y for _ in range(x)]
+    
+#print(recupConstantesDES())
 
-print(recupConstantesDES())
