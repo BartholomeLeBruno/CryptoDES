@@ -75,7 +75,6 @@ def decouperPar64(message):
 
     return messageParPaquet
 
-
 def permutationInitiale(message):
     X = dict()
     result = []
@@ -104,16 +103,54 @@ def permutationInitialeInverse(message):
     
     return result
 
-def ronde(message):
+def expansion(message):
+    X = dict()
+    result = []
+    X=recupConstantesDES()
 
+    E = X["E"]
+    compt = 0
+
+    while compt < len(E[0]) :
+        result.insert(compt,int(message[E[0][compt]]))
+        compt+=1
+    
+    return result
+
+
+def chiffrer(message):
+    i=0
+    xor=[]
     tab_G = []
     tab_D = []
+
+    dictClef = dictionnaireDes16Clefs()
+    messageApresPI = permutationInitiale(message)
+
     for i in range(0,32):
-        tab_G.insert(i,message[i])
-        tab_D.insert(i+32,message[i+32])
+        tab_G.insert(i,messageApresPI[i])
+        tab_D.insert(i+32,messageApresPI[i+32])
+    
+    messageApresExpansion = expansion(tab_D)
+    clef = dictClef[0]
+
+    print(messageApresExpansion)
+    print(clef)
+    
+    for i in range(0,48):
+        if clef[i] == messageApresExpansion[i] : 
+            xor.insert(i,0)
+        else :
+            xor.insert(i,1)
+        
+    
+    print(xor)
 
 
+    
 
-print(decouperPar64("1101110010111011110001001101010111100110111101111100001000110010100111010010101101101011111000110011101011011111"))
-print(ronde("1101110010111011110001001101010111100110111101111100001000110010"))
+
+    
+
+print(chiffrer("1101110010111011110001001101010111100110111101111100001000110010"))
 
