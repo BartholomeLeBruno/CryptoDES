@@ -81,16 +81,30 @@ def permutationInitiale(message):
     result = []
     X=recupConstantesDES()
 
-    CP_1 = X["PI"]
+    PI = X["PI"]
     compt = 0
 
-    while compt < len(CP_1[0]) :
-        result.insert(compt,int(message[CP_1[0][compt]]))
+    while compt < len(PI[0]) :
+        result.insert(compt,int(message[PI[0][compt]]))
         compt+=1
     
     return result
 
-        
+def permutationInitialeInverse(message):
+    X = dict()
+    result = []
+    X=recupConstantesDES()
+
+    PI_I = X["PI_I"]
+    compt = 0
+
+    while compt < len(PI_I[0]) :
+        result.insert(compt,int(message[PI_I[0][compt]]))
+        compt+=1
+    
+    return result
+
+
 
 
 print(decouperPar64("messsageesttroplongilfautlediviserenplusieurspaquetde64bitspourpouvoirlechiffrernormalementabcdefghijklmnopqrstuvwxyzabcdefghijklmn"))
