@@ -142,9 +142,29 @@ def chiffrer(message):
             xor.insert(i,0)
         else :
             xor.insert(i,1)
-        
     
     print(xor)
+
+
+    blocDe6Bits = dict()
+    tabTemp=[]
+    compt=0
+    paquetDe6=1
+
+    for i in range(0,48):
+        tabTemp.insert(compt,xor[i])
+        compt+=1
+
+        if compt%6 == 0:
+            blocDe6Bits[paquetDe6]=tabTemp
+            tabTemp=[]
+            paquetDe6+=1
+            compt=0
+        
+    print(blocDe6Bits)
+
+    
+    
 
 
     
