@@ -50,4 +50,33 @@ def dictionnaireDes16Clefs() :
 
     return clef
 
-print(dictionnaireDes16Clefs())
+def decouperPar64(message):
+    messageParPaquet = dict()
+    msg = []
+    i = 0
+    j = 0
+    compt = 0
+    partieDuMessage = 0
+
+    while compt < len(message) :
+        msg.insert(i,message[compt])
+        compt+=1
+        i+=1
+        if(compt%64==0):
+            messageParPaquet[partieDuMessage]=msg
+            msg=[]
+            partieDuMessage+=1
+            i=0
+    
+    for i in range(i,64):
+        msg.insert(i,0)
+    
+    messageParPaquet[partieDuMessage+1]=msg
+
+    return messageParPaquet
+
+        
+        
+
+
+print(decouperPar64("messsageesttroplongilfautlediviserenplusieurspaquetde64bitspourpouvoirlechiffrernormalementabcdefghijklmnopqrstuvwxyzabcdefghijklmn"))
