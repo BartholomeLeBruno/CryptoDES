@@ -75,8 +75,24 @@ def decouperPar64(message):
 
     return messageParPaquet
 
-        
+
+def permutationInitiale(message):
+    X = dict()
+    result = []
+    X=recupConstantesDES()
+
+    CP_1 = X["PI"]
+    compt = 0
+
+    while compt < len(CP_1[0]) :
+        result.insert(compt,int(message[CP_1[0][compt]]))
+        compt+=1
+    
+    return result
+
         
 
 
 print(decouperPar64("messsageesttroplongilfautlediviserenplusieurspaquetde64bitspourpouvoirlechiffrernormalementabcdefghijklmnopqrstuvwxyzabcdefghijklmn"))
+print(permutationInitiale("1101110010111011110001001101010111100110111101111100001000110010"))
+
