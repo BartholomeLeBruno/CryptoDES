@@ -71,7 +71,7 @@ def decouperPar64(message):
     for i in range(i,64):
         msg.insert(i,0)
     
-    messageParPaquet[partieDuMessage+1]=msg
+    messageParPaquet[partieDuMessage]=msg
 
     return messageParPaquet
 
@@ -104,9 +104,16 @@ def permutationInitialeInverse(message):
     
     return result
 
+def ronde(message):
+
+    tab_G = []
+    tab_D = []
+    for i in range(0,32):
+        tab_G.insert(i,message[i])
+        tab_D.insert(i+32,message[i+32])
 
 
 
-print(decouperPar64("messsageesttroplongilfautlediviserenplusieurspaquetde64bitspourpouvoirlechiffrernormalementabcdefghijklmnopqrstuvwxyzabcdefghijklmn"))
-print(permutationInitiale("1101110010111011110001001101010111100110111101111100001000110010"))
+print(decouperPar64("1101110010111011110001001101010111100110111101111100001000110010100111010010101101101011111000110011101011011111"))
+print(ronde("1101110010111011110001001101010111100110111101111100001000110010"))
 
