@@ -123,6 +123,9 @@ def chiffrer(message):
     xor=[]
     tab_G = []
     tab_D = []
+    
+    X = dict()
+    X=recupConstantesDES()
 
     dictClef = dictionnaireDes16Clefs()
     messageApresPI = permutationInitiale(message)
@@ -162,6 +165,29 @@ def chiffrer(message):
             compt=0
         
     print(blocDe6Bits)
+
+    blocDe6bitsResult = dict()
+
+    i=1
+    while i <= 8:
+        x = int(str(blocDe6Bits[i][0])+str(blocDe6Bits[i][5]),2)
+        y = int(str(blocDe6Bits[i][1])+str(blocDe6Bits[i][2])+str(blocDe6Bits[i][3])+str(blocDe6Bits[i][4]),2)
+        
+        longueur = len(bin(X["S"][i-1][x][y])[2:])
+        if longueur == 1 :
+            blocDe6bitsResult[i] = '000' + bin(X["S"][i-1][x][y])[2:]
+        elif longueur == 2 :
+            blocDe6bitsResult[i] = '00' + bin(X["S"][i-1][x][y])[2:]
+        elif longueur == 3 :
+            blocDe6bitsResult[i] = '0' + bin(X["S"][i-1][x][y])[2:]
+        else : 
+            blocDe6bitsResult[i] = bin(X["S"][i-1][x][y])[2:]
+        i+=1
+
+    print(blocDe6bitsResult)
+
+
+    
 
     
     
