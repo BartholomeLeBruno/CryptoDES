@@ -207,10 +207,22 @@ def chiffrer(message):
     print(messageApresPermutationRondes)
 
 
-    
+    xor = []
 
+    for i in range(0,32):
+        if messageApresPermutationRondes[i] == tab_G[i] : 
+            xor.insert(i,0)
+        else :
+            xor.insert(i,1)
 
+    print(xor)
     
+    tab_G = tab_D
+    tab_D = xor
+
+    print(tab_D)
+    print(tab_G) 
+
 
 print(chiffrer("1101110010111011110001001101010111100110111101111100001000110010"))
 
