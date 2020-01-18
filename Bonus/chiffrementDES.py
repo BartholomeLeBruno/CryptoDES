@@ -186,7 +186,8 @@ def chiffrer(message):
 
     print(blocDe6bitsResult)
 
-
+    concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
+    print(concatBlocDe6Bits)
     
 
     
