@@ -252,9 +252,18 @@ def calcule16Rondes(message):
     return message
 
 def chiffrer(message):
-    resultatDes16Rondes = calcule16Rondes(message)
-    return permutationInitialeInverse(resultatDes16Rondes)
+    
+    blocsDe64Bits = decouperPar64(message)
+    print(len(blocsDe64Bits))
+    messageChiffrer=[]
 
-print(chiffrer("1101110010111011110001001101010111100110111101111100001000110010"))
+    for i in range (0,len(blocsDe64Bits)):
+        resultatDes16Rondes = calcule16Rondes(blocsDe64Bits[i])
+        messageChiffrer +=permutationInitialeInverse(resultatDes16Rondes)
+    
+    print(len(messageChiffrer))
+    return messageChiffrer
 
+    
 
+print(chiffrer("11011100101110111100010011010101111001101111011111000010001100101101110010111011110001001101010111100110111101111100001000110010"))
