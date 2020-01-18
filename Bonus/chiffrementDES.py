@@ -117,6 +117,20 @@ def expansion(message):
     
     return result
 
+def permutationDesRondes(message):
+    X = dict()
+    result = []
+    X=recupConstantesDES()
+
+    PERM = X["PERM"]
+    compt = 0
+
+    while compt < len(PERM[0]) :
+        result.insert(compt,int(message[PERM[0][compt]]))
+        compt+=1
+    
+    return result
+
 
 def chiffrer(message):
     i=0
@@ -189,9 +203,8 @@ def chiffrer(message):
     concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
     print(concatBlocDe6Bits)
     
-
-    
-    
+    messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
+    print(messageApresPermutationRondes)
 
 
     
