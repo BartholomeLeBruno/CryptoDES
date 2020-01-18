@@ -251,7 +251,10 @@ def calcule16Rondes(message):
     
     return message
 
+def chiffrer(message):
+    resultatDes16Rondes = calcule16Rondes(message)
+    return permutationInitialeInverse(resultatDes16Rondes)
 
-print(calcule16Rondes("1101110010111011110001001101010111100110111101111100001000110010"))
+print(chiffrer("1101110010111011110001001101010111100110111101111100001000110010"))
 
 
