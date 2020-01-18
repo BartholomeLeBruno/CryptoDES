@@ -132,27 +132,26 @@ def permutationDesRondes(message):
     return result
 
 
-def chiffrer(message):
+def calcule1Ronde(message,ronde):
     i=0
     xor=[]
-    tab_G = []
-    tab_D = []
-    
     X = dict()
     X=recupConstantesDES()
 
     dictClef = dictionnaireDes16Clefs()
-    messageApresPI = permutationInitiale(message)
+    tab_G = []
+    tab_D = []
 
     for i in range(0,32):
-        tab_G.insert(i,messageApresPI[i])
-        tab_D.insert(i+32,messageApresPI[i+32])
-    
-    messageApresExpansion = expansion(tab_D)
-    clef = dictClef[0]
+        tab_G.insert(i,message[i])
+        tab_D.insert(i+32,message[i+32])
 
-    print(messageApresExpansion)
-    print(clef)
+    messageApresExpansion = expansion(tab_D)
+    clef = dictClef[ronde]
+
+    #print(ronde)
+    #print(messageApresExpansion)
+    #print(clef)
     
     for i in range(0,48):
         if clef[i] == messageApresExpansion[i] : 
@@ -160,7 +159,8 @@ def chiffrer(message):
         else :
             xor.insert(i,1)
     
-    print(xor)
+    clef = []
+    #print(xor)
 
 
     blocDe6Bits = dict()
@@ -178,7 +178,7 @@ def chiffrer(message):
             paquetDe6+=1
             compt=0
         
-    print(blocDe6Bits)
+    #print(blocDe6Bits)
 
     blocDe6bitsResult = dict()
 
@@ -198,31 +198,60 @@ def chiffrer(message):
             blocDe6bitsResult[i] = bin(X["S"][i-1][x][y])[2:]
         i+=1
 
-    print(blocDe6bitsResult)
+    #print(blocDe6bitsResult)
 
     concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
-    print(concatBlocDe6Bits)
+    #print(concatBlocDe6Bits)
     
     messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
-    print(messageApresPermutationRondes)
+    #print(messageApresPermutationRondes)
 
 
     xor = []
-
     for i in range(0,32):
         if messageApresPermutationRondes[i] == tab_G[i] : 
             xor.insert(i,0)
         else :
             xor.insert(i,1)
 
-    print(xor)
     
     tab_G = tab_D
     tab_D = xor
 
-    print(tab_D)
-    print(tab_G) 
+    #print(tab_G)
+    #print(tab_D)
+
+    return tab_G+tab_D
+
+def calcule16Rondes(message):
+    i = 0
+    j = 0
+    tab_G = []
+    tab_D = []
+    
+
+    message = permutationInitiale(message)
+
+    for i in range (0,16):
+        #print("partie ",i)
+        resultatRonde = calcule1Ronde(message,i)
+
+        for j in range(0,32):
+            tab_G.insert(j,resultatRonde[j])
+            tab_D.insert(j+32,resultatRonde[j+32])
+        
+        resultatRonde=[]
+        message = []
+        message = tab_G + tab_D
+       # print("G" ,tab_G)
+        #print("D" , tab_D)
+        tab_D = []
+        tab_G = []
+        #print("\n\n")
+    
+    return message
 
 
-print(chiffrer("1101110010111011110001001101010111100110111101111100001000110010"))
+print(calcule16Rondes("1101110010111011110001001101010111100110111101111100001000110010"))
+
 
