@@ -62,16 +62,15 @@ def decouperPar64(message):
         msg.insert(i,message[compt])
         compt+=1
         i+=1
-        if(compt%64==0):
+        if compt%64==0 :
             messageParPaquet[partieDuMessage]=msg
             msg=[]
             partieDuMessage+=1
             i=0
-    
-    for i in range(i,64):
-        msg.insert(i,0)
-    
-    messageParPaquet[partieDuMessage]=msg
+    if compt%64!=0 :
+        for i in range(i,64):
+            msg.insert(i,0)
+        messageParPaquet[partieDuMessage]=msg
 
     return messageParPaquet
 
@@ -148,10 +147,6 @@ def calcule1Ronde(message,ronde):
 
     messageApresExpansion = expansion(tab_D)
     clef = dictClef[ronde]
-
-    #print(ronde)
-    #print(messageApresExpansion)
-    #print(clef)
     
     for i in range(0,48):
         if clef[i] == messageApresExpansion[i] : 
@@ -160,8 +155,6 @@ def calcule1Ronde(message,ronde):
             xor.insert(i,1)
     
     clef = []
-    #print(xor)
-
 
     blocDe6Bits = dict()
     tabTemp=[]
@@ -177,9 +170,7 @@ def calcule1Ronde(message,ronde):
             tabTemp=[]
             paquetDe6+=1
             compt=0
-        
-    #print(blocDe6Bits)
-
+    
     blocDe6bitsResult = dict()
 
     i=1
@@ -198,14 +189,9 @@ def calcule1Ronde(message,ronde):
             blocDe6bitsResult[i] = bin(X["S"][i-1][x][y])[2:]
         i+=1
 
-    #print(blocDe6bitsResult)
-
     concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
-    #print(concatBlocDe6Bits)
     
     messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
-    #print(messageApresPermutationRondes)
-
 
     xor = []
     for i in range(0,32):
@@ -213,13 +199,9 @@ def calcule1Ronde(message,ronde):
             xor.insert(i,0)
         else :
             xor.insert(i,1)
-
     
     tab_G = tab_D
     tab_D = xor
-
-    #print(tab_G)
-    #print(tab_D)
 
     return tab_G+tab_D
 
@@ -233,7 +215,6 @@ def calcule16Rondes(message):
     message = permutationInitiale(message)
 
     for i in range (0,16):
-        #print("partie ",i)
         resultatRonde = calcule1Ronde(message,i)
 
         for j in range(0,32):
@@ -243,18 +224,14 @@ def calcule16Rondes(message):
         resultatRonde=[]
         message = []
         message = tab_G + tab_D
-       # print("G" ,tab_G)
-        #print("D" , tab_D)
         tab_D = []
         tab_G = []
-        #print("\n\n")
     
     return message
 
 def chiffrer(message):
     
     blocsDe64Bits = decouperPar64(message)
-    print(len(blocsDe64Bits))
     messageChiffrer=[]
 
     for i in range (0,len(blocsDe64Bits)):
@@ -266,4 +243,4 @@ def chiffrer(message):
 
     
 
-print(chiffrer("11011100101110111100010011010101111001101111011111000010001100101101110010111011110001001101010111100110111101111100001000110010"))
+print(chiffrer("11011100101110111100010011010101111001101111011111000010001100101101110010111011110001001101010111100110"))
