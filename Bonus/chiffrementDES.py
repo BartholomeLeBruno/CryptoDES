@@ -130,7 +130,6 @@ def permutationDesRondes(message):
     
     return result
 
-
 def calcule1Ronde(message,ronde):
     i=0
     xor=[]
@@ -243,4 +242,115 @@ def chiffrer(message):
 
     
 
-print(chiffrer("11011100101110111100010011010101111001101111011111000010001100101101110010111011110001001101010111100110"))
+#print(chiffrer("11011100101110111100010011010101111001101111011111000010001100101101110010111011110001001101010111100110"))
+
+
+def calcule1RondeDéchiffrement(message,ronde):
+    i=0
+    xor=[]
+    X = dict()
+    X=recupConstantesDES()
+
+    dictClef = dictionnaireDes16Clefs()
+    tab_G = []
+    tab_D = []
+
+    for i in range(0,32):
+        tab_G.insert(i,message[i])
+        tab_D.insert(i+32,message[i+32])
+
+    messageApresExpansion = expansion(tab_D)
+    clef = dictClef[ronde]
+    for i in range(0,48):
+        if clef[i] == messageApresExpansion[i] : 
+            xor.insert(i,0)
+        else :
+            xor.insert(i,1)
+    
+    clef = []
+
+    blocDe6Bits = dict()
+    tabTemp=[]
+    compt=0
+    paquetDe6=1
+
+    for i in range(0,48):
+        tabTemp.insert(compt,xor[i])
+        compt+=1
+
+        if compt%6 == 0:
+            blocDe6Bits[paquetDe6]=tabTemp
+            tabTemp=[]
+            paquetDe6+=1
+            compt=0
+    
+    blocDe6bitsResult = dict()
+
+    i=1
+    while i <= 8:
+        x = int(str(blocDe6Bits[i][0])+str(blocDe6Bits[i][5]),2)
+        y = int(str(blocDe6Bits[i][1])+str(blocDe6Bits[i][2])+str(blocDe6Bits[i][3])+str(blocDe6Bits[i][4]),2)
+        
+        longueur = len(bin(X["S"][i-1][x][y])[2:])
+        if longueur == 1 :
+            blocDe6bitsResult[i] = '000' + bin(X["S"][i-1][x][y])[2:]
+        elif longueur == 2 :
+            blocDe6bitsResult[i] = '00' + bin(X["S"][i-1][x][y])[2:]
+        elif longueur == 3 :
+            blocDe6bitsResult[i] = '0' + bin(X["S"][i-1][x][y])[2:]
+        else : 
+            blocDe6bitsResult[i] = bin(X["S"][i-1][x][y])[2:]
+        i+=1
+
+    concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
+    
+    messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
+
+    xor = []
+    for i in range(0,32):
+        if messageApresPermutationRondes[i] == tab_G[i] : 
+            xor.insert(i,0)
+        else :
+            xor.insert(i,1)
+    
+    tab_G = tab_D
+    tab_D = xor
+
+    return tab_G+tab_D
+
+def calcule16RondesDéchiffrement(message):
+    i = 0
+    j = 0
+    tab_G = []
+    tab_D = []
+
+    message = permutationInitiale(message)
+
+    for i in range (0,16):
+        resultatRonde = calcule1RondeDéchiffrement(message,15-i)
+
+        for j in range(0,32):
+            tab_G.insert(j,resultatRonde[j])
+            tab_D.insert(j+32,resultatRonde[j+32])
+        
+        resultatRonde=[]
+        message = []
+        message = tab_G + tab_D
+        tab_D = []
+        tab_G = []
+    
+    return message
+
+def déchiffrer(message):
+    
+    blocsDe64Bits = decouperPar64(message)
+    messageChiffrer=[]
+
+    for i in range (0,len(blocsDe64Bits)):
+        resultatDes16Rondes = calcule16RondesDéchiffrement(blocsDe64Bits[i])
+        messageChiffrer +=permutationInitialeInverse(resultatDes16Rondes)
+    
+    print(len(messageChiffrer))
+    return messageChiffrer
+
+print(déchiffrer("1000100000110110101000010001001111001011011000001001010010010000"))
