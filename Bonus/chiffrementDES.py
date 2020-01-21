@@ -1,4 +1,18 @@
 from Extract_ConstantesDES import recupConstantesDES
+from ConvAlphaBin import conv_bin
+from ConvAlphaBin import nib_vnoc
+
+def listToString(s): 
+    
+    # initialize an empty string
+    str1 = "" 
+    
+    # traverse in the string  
+    for ele in s: 
+        str1 += str(ele)  
+    
+    # return string  
+    return str1
 
 def decallageAGauche(tab):
     result = []
@@ -237,13 +251,7 @@ def chiffrer(message):
         resultatDes16Rondes = calcule16Rondes(blocsDe64Bits[i])
         messageChiffrer +=permutationInitialeInverse(resultatDes16Rondes)
     
-    print(len(messageChiffrer))
     return messageChiffrer
-
-    
-
-print(chiffrer("1101110010111011110001001101010111100110111101111100001000110010"))
-
 
 def calcule1RondeDéchiffrement(message,ronde):
     i=0
@@ -350,7 +358,12 @@ def déchiffrer(message):
         resultatDes16Rondes = calcule16RondesDéchiffrement(blocsDe64Bits[i])
         messageChiffrer +=permutationInitialeInverse(resultatDes16Rondes)
     
-    print(len(messageChiffrer))
-    return messageChiffrer
+    return listToString(messageChiffrer)
 
-#print(déchiffrer("1000100000110110101000010001001111001011011000001001010010010000"))
+
+f = open("Chiffrement_DES_de_1.txt", "r")
+txt = f.read()
+f.close()
+
+txt_bin = conv_bin(txt)
+print(nib_vnoc(déchiffrer(txt_bin)))
