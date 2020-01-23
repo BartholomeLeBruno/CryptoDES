@@ -1,13 +1,15 @@
 from Extract_ConstantesDES import recupConstantesDES
 from ConvAlphaBin import conv_bin, nib_vnoc
+from sys import argv, exc_info
 
 CONSTANTES = recupConstantesDES()
+
 PI = CONSTANTES['PI']
 PI_I = CONSTANTES['PI_I']
 E = CONSTANTES['E']
 CP_1 = CONSTANTES['CP_1']
 CP_2 = CONSTANTES['CP_2']
-S = CONSTANTES['S'] # {int: [[int]]} 0 à 7
+S = CONSTANTES['S']
 PERM = CONSTANTES['PERM']
 
 def listToString(s): 
@@ -31,12 +33,9 @@ def decallageAGauche(tab):
     result.insert(compt,tab[0])
     return result
  
-def dictionnaireDes16Clefs() :
-    f = open("Clef_de_1.txt", "r")
-    txt = f.read()
-    f.close()
- 
-    clef = dict()
+def dictionnaireDes16Clefs(clef) :
+
+    clefs = dict()
     tab = []
     tab_CP2=[]
     tab_G = []
@@ -46,7 +45,7 @@ def dictionnaireDes16Clefs() :
     compt = 0
  
     while compt < len(CP_1[0]) :
-        tab.insert(compt,int(txt[CP_1[0][compt]]))
+        tab.insert(compt,int(clef[CP_1[0][compt]]))
         compt+=1
  
     tab_G = tab[:28]
@@ -60,10 +59,10 @@ def dictionnaireDes16Clefs() :
         while compt < len(CP_2[0]) :
             tab_CP2.insert(compt,tab_G_D[CP_2[0][compt]])
             compt+=1
-        clef[i]=tab_CP2
+        clefs[i]=tab_CP2
         tab_CP2=[]
  
-    return clef
+    return clefs
  
 def decouperPar64(message):
     messageParPaquet = dict()
@@ -125,7 +124,7 @@ def permutationDesRondes(message):
    
     return result
  
-def calcule1RondeChiffrement(message,ronde):
+def calcule1RondeChiffrement(message,ronde,clef):
     blocDe6Bits = dict()
     blocDe6bitsResult = dict()
     tab_G = []
@@ -134,7 +133,7 @@ def calcule1RondeChiffrement(message,ronde):
     compt=0
     paquetDe6=1
 
-    dictClef = dictionnaireDes16Clefs()
+    dictClef = dictionnaireDes16Clefs(clef)
     for i in range(0,32):
         tab_G.insert(i,message[i])
         tab_D.insert(i+32,message[i+32])
@@ -177,32 +176,34 @@ def calcule1RondeChiffrement(message,ronde):
  
     return tab_G+tab_D
  
-def calcule16RondesChiffrement(message):
+def calcule16RondesChiffrement(message,clef):
 
     message = permutationInitiale(message)
     for i in range (0,16):
-        message = calcule1RondeChiffrement(message,i)
+        message = calcule1RondeChiffrement(message,i,clef)
    
     return message
  
-def chiffrer(message):
+def chiffrer(message,clef):
    
     blocsDe64Bits = decouperPar64(message)
     messageChiffrer=[]
  
     for i in range (0,len(blocsDe64Bits)):
-        resultatDes16Rondes = calcule16RondesChiffrement(blocsDe64Bits[i])
+        resultatDes16Rondes = calcule16RondesChiffrement(blocsDe64Bits[i],clef)
         messageChiffrer +=permutationInitialeInverse(resultatDes16Rondes)
  
-    return messageChiffrer
+    messageChiffrer=map(str,messageChiffrer)
+    result=''.join(str(a) for a in  messageChiffrer)
+    return nib_vnoc(result)
  
-def calcule1RondeDechiffrement(message,ronde):
+def calcule1RondeDechiffrement(message,ronde,clef):
     tab_G = []
     tab_D = []
     blocDe6bitsResult = dict()
     blocDe6Bits = dict()
 
-    dictClef = dictionnaireDes16Clefs()
+    dictClef = dictionnaireDes16Clefs(clef)
     for i in range(0,32):
         tab_G.insert(i,message[i])
         tab_D.insert(i+32,message[i+32])
@@ -249,35 +250,46 @@ def calcule1RondeDechiffrement(message,ronde):
 
     return tab_G+tab_D
  
-def calcule16RondesDechiffrement(message):
+def calcule16RondesDechiffrement(message,clef):
 
     message = permutationInitiale(message)
     for i in range (0,16):
-        message = calcule1RondeDechiffrement(message,15-i)
+        message = calcule1RondeDechiffrement(message,15-i,clef)
 
     return message
  
-def dechiffrer(message):
+def dechiffrer(message,clef):
    
     blocsDe64Bits = decouperPar64(message)
     messageDechiffrer=[]
  
     for i in range (0,len(blocsDe64Bits)):
-        resultatDes16Rondes = calcule16RondesDechiffrement(blocsDe64Bits[i])
+        resultatDes16Rondes = calcule16RondesDechiffrement(blocsDe64Bits[i],clef)
         messageDechiffrer +=permutationInitialeInverse(resultatDes16Rondes)
    
-    return messageDechiffrer
+    messageDechiffrer=map(str,messageDechiffrer)
+    result=''.join(str(a) for a in  messageDechiffrer)
+    return nib_vnoc(result)
  
- 
-f = open("Chiffrement_DES_de_1.txt", "r")
-txt = f.read()
-f.close()
- 
-#txt_binaire = conv_bin(txt)
-#txt_binaire_chiffre = déchiffrer(txt_binaire)
-print(dechiffrer("1000100000110110101000010001001111001011011000001001010010010000"))
-print(chiffrer("1101110010111011110001001101010111100110111101111100001000110010"))
+if __name__ == '__main__':
 
-#txt_binaire_chiffre=map(str,txt_binaire_chiffre)
-#txtt=''.join(str(a) for a in  txt_binaire_chiffre)
-#print(nib_vnoc(txtt))
+    if len(argv) < 4:
+        print("\n\nle format de votre commande n'est pas correct \n python votreFichierADechiffrerOuAChiffrer votreClef leMotCleChiffrerOuDechiffrer \n\n")
+        exit(1)
+
+    f = open(argv[1], "r")
+    txt = f.read()
+    f.close()
+    txt_binaire = conv_bin(txt)
+
+    f = open(argv[2], "r")
+    clef = f.read()
+    f.close()
+
+    if argv[3] == 'chiffrer':
+        print(chiffrer(txt_binaire, clef))
+    elif argv[3] == 'dechiffrer':
+        print(dechiffrer(txt_binaire, clef))
+    else : 
+        print("\n\nveuillez taper 'chiffrer' ou 'dechiffrer' à la place de ",argv[3],"\n\n")
+        exit(1)
