@@ -12,11 +12,15 @@ PERM = CONSTANTES['PERM']
 
 def listToString(s): 
     str1 = "" 
-
     for ele in s: 
         str1 += str(ele)  
-
     return str1
+
+def XOR(input1,input2):
+    xor_result = []
+    for i in range(0,len(input1)):
+        xor_result.append(int(input1[i])^int(input2[i]))
+    return xor_result
 
 def decallageAGauche(tab):
     result = []
@@ -131,8 +135,6 @@ def permutationDesRondes(message):
     return result
  
 def calcule1Ronde(message,ronde):
-    xor=[]
-
     dictClef = dictionnaireDes16Clefs()
     tab_G = []
     tab_D = []
@@ -144,13 +146,7 @@ def calcule1Ronde(message,ronde):
     messageApresExpansion = expansion(tab_D)
     clef = dictClef[ronde]
    
-    for i in range(0,48):
-        if clef[i] == messageApresExpansion[i] :
-            xor.insert(i,0)
-        else :
-            xor.insert(i,1)
-   
-    clef = []
+    xor = XOR(clef,messageApresExpansion)
  
     blocDe6Bits = dict()
     tabTemp=[]
@@ -189,13 +185,7 @@ def calcule1Ronde(message,ronde):
    
     messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
  
-    xor = []
-    for i in range(0,32):
-        if messageApresPermutationRondes[i] == tab_G[i] :
-            xor.insert(i,0)
-        else :
-            xor.insert(i,1)
-   
+    xor = XOR(messageApresPermutationRondes,tab_G)
     tab_G = tab_D
     tab_D = xor
  
@@ -222,8 +212,6 @@ def chiffrer(message):
  
 def calcule1RondeDéchiffrement(message,ronde):
     i=0
-    xor=[]
- 
     dictClef = dictionnaireDes16Clefs()
     tab_G = []
     tab_D = []
@@ -234,14 +222,8 @@ def calcule1RondeDéchiffrement(message,ronde):
  
     messageApresExpansion = expansion(tab_G)
     clef = dictClef[ronde]
-    for i in range(0,48):
-        if clef[i] == messageApresExpansion[i] :
-            xor.insert(i,0)
-        else :
-            xor.insert(i,1)
-   
-    clef = []
- 
+
+    xor=XOR(clef,messageApresExpansion) 
     blocDe6Bits = dict()
     tabTemp=[]
     compt=0
@@ -279,13 +261,7 @@ def calcule1RondeDéchiffrement(message,ronde):
    
     messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
  
-    xor = []
-    for i in range(0,32):
-        if messageApresPermutationRondes[i] == tab_D[i] :
-            xor.insert(i,0)
-        else :
-            xor.insert(i,1)
-   
+    xor = XOR(messageApresPermutationRondes,tab_D)
     tab_D = tab_G
     tab_G = xor
    
