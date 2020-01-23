@@ -12,12 +12,26 @@ CP_2 = CONSTANTES['CP_2']
 S = CONSTANTES['S']
 PERM = CONSTANTES['PERM']
 
-def listToString(s): 
-    str1 = "" 
-    for ele in s: 
-        str1 += str(ele)  
-    return str1
-
+def remplacerParValeurDeS(blocDe6Bits):
+    blocDe6bitsResult = dict()
+    i=1
+    while i <= 8:
+        x = int(str(blocDe6Bits[i][0])+str(blocDe6Bits[i][5]),2)
+        y = int(str(blocDe6Bits[i][1])+str(blocDe6Bits[i][2])+str(blocDe6Bits[i][3])+str(blocDe6Bits[i][4]),2)
+       
+        longueur = len(bin(S[i-1][x][y])[2:])
+        if longueur == 1 :
+            blocDe6bitsResult[i] = '000' + bin(S[i-1][x][y])[2:]
+        elif longueur == 2 :
+            blocDe6bitsResult[i] = '00' + bin(S[i-1][x][y])[2:]
+        elif longueur == 3 :
+            blocDe6bitsResult[i] = '0' + bin(S[i-1][x][y])[2:]
+        else :
+            blocDe6bitsResult[i] = bin(S[i-1][x][y])[2:]
+        i+=1
+ 
+    return blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
+    
 def XOR(input1,input2):
     xor_result = []
     for i in range(0,len(input1)):
@@ -68,7 +82,6 @@ def decouperPar64(message):
     messageParPaquet = dict()
     msg = []
     i = 0
-    j = 0
     compt = 0
     partieDuMessage = 0
  
@@ -126,17 +139,12 @@ def permutationDesRondes(message):
  
 def calcule1RondeChiffrement(message,ronde,clef):
     blocDe6Bits = dict()
-    blocDe6bitsResult = dict()
-    tab_G = []
-    tab_D = []
     tabTemp=[]
     compt=0
     paquetDe6=1
 
     dictClef = dictionnaireDes16Clefs(clef)
-    for i in range(0,32):
-        tab_G.insert(i,message[i])
-        tab_D.insert(i+32,message[i+32])
+    tab_G,tab_D = message[:32], message[32:]
  
     messageApresExpansion = expansion(tab_D)
     clef = dictClef[ronde]
@@ -152,23 +160,7 @@ def calcule1RondeChiffrement(message,ronde,clef):
             paquetDe6+=1
             compt=0
    
-    i=1
-    while i <= 8:
-        x = int(str(blocDe6Bits[i][0])+str(blocDe6Bits[i][5]),2)
-        y = int(str(blocDe6Bits[i][1])+str(blocDe6Bits[i][2])+str(blocDe6Bits[i][3])+str(blocDe6Bits[i][4]),2)
-       
-        longueur = len(bin(S[i-1][x][y])[2:])
-        if longueur == 1 :
-            blocDe6bitsResult[i] = '000' + bin(S[i-1][x][y])[2:]
-        elif longueur == 2 :
-            blocDe6bitsResult[i] = '00' + bin(S[i-1][x][y])[2:]
-        elif longueur == 3 :
-            blocDe6bitsResult[i] = '0' + bin(S[i-1][x][y])[2:]
-        else :
-            blocDe6bitsResult[i] = bin(S[i-1][x][y])[2:]
-        i+=1
- 
-    concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
+    concatBlocDe6Bits = remplacerParValeurDeS(blocDe6Bits)
     messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
     xor = XOR(messageApresPermutationRondes,tab_G)
     tab_G = tab_D
@@ -198,16 +190,9 @@ def chiffrer(message,clef):
     return nib_vnoc(result)
  
 def calcule1RondeDechiffrement(message,ronde,clef):
-    tab_G = []
-    tab_D = []
-    blocDe6bitsResult = dict()
     blocDe6Bits = dict()
-
     dictClef = dictionnaireDes16Clefs(clef)
-    for i in range(0,32):
-        tab_G.insert(i,message[i])
-        tab_D.insert(i+32,message[i+32])
- 
+    tab_G,tab_D = message[:32], message[32:]
     messageApresExpansion = expansion(tab_G)
     clef = dictClef[ronde]
 
@@ -226,23 +211,7 @@ def calcule1RondeDechiffrement(message,ronde,clef):
             paquetDe6+=1
             compt=0
  
-    i=1
-    while i <= 8:
-        x = int(str(blocDe6Bits[i][0])+str(blocDe6Bits[i][5]),2)
-        y = int(str(blocDe6Bits[i][1])+str(blocDe6Bits[i][2])+str(blocDe6Bits[i][3])+str(blocDe6Bits[i][4]),2)
-       
-        longueur = len(bin(S[i-1][x][y])[2:])
-        if longueur == 1 :
-            blocDe6bitsResult[i] = '000' + bin(S[i-1][x][y])[2:]
-        elif longueur == 2 :
-            blocDe6bitsResult[i] = '00' + bin(S[i-1][x][y])[2:]
-        elif longueur == 3 :
-            blocDe6bitsResult[i] = '0' + bin(S[i-1][x][y])[2:]
-        else :
-            blocDe6bitsResult[i] = bin(S[i-1][x][y])[2:]
-        i+=1
- 
-    concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
+    concatBlocDe6Bits = remplacerParValeurDeS(blocDe6Bits)
     messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
     xor = XOR(messageApresPermutationRondes,tab_D)
     tab_D = tab_G
