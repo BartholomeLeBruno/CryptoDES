@@ -1,16 +1,21 @@
 from Extract_ConstantesDES import recupConstantesDES
 from ConvAlphaBin import conv_bin, nib_vnoc
 
+CONSTANTES = recupConstantesDES()
+PI = CONSTANTES['PI']
+PI_I = CONSTANTES['PI_I']
+E = CONSTANTES['E']
+CP_1 = CONSTANTES['CP_1']
+CP_2 = CONSTANTES['CP_2']
+S = CONSTANTES['S'] # {int: [[int]]} 0 à 7
+PERM = CONSTANTES['PERM']
+
 def listToString(s): 
-    
-    # initialize an empty string
     str1 = "" 
-    
-    # traverse in the string  
+
     for ele in s: 
         str1 += str(ele)  
-    
-    # return string  
+
     return str1
 
 def decallageAGauche(tab):
@@ -29,17 +34,12 @@ def dictionnaireDes16Clefs() :
  
     sdl = '\n'
  
-    X = dict()
     clef = dict()
     tab = []
     tab_CP2=[]
     tab_G = []
     tab_D = []
     tab_G_D = []
-    X=recupConstantesDES()
- 
-    CP_1 = X["CP_1"]
-    CP_2 = X["CP_2"]
  
     compt = 0
  
@@ -88,13 +88,8 @@ def decouperPar64(message):
     return messageParPaquet
  
 def permutationInitiale(message):
-    X = dict()
     result = []
-    X=recupConstantesDES()
- 
-    PI = X["PI"]
     compt = 0
- 
     while compt < len(PI[0]) :
         result.insert(compt,int(message[PI[0][compt]]))
         compt+=1
@@ -102,11 +97,7 @@ def permutationInitiale(message):
     return result
  
 def permutationInitialeInverse(message):
-    X = dict()
     result = []
-    X=recupConstantesDES()
- 
-    PI_I = X["PI_I"]
     compt = 0
  
     while compt < len(PI_I[0]) :
@@ -130,11 +121,7 @@ def expansion(message):
     return result
  
 def permutationDesRondes(message):
-    X = dict()
     result = []
-    X=recupConstantesDES()
- 
-    PERM = X["PERM"]
     compt = 0
  
     while compt < len(PERM[0]) :
@@ -144,11 +131,8 @@ def permutationDesRondes(message):
     return result
  
 def calcule1Ronde(message,ronde):
-    i=0
     xor=[]
-    X = dict()
-    X=recupConstantesDES()
- 
+
     dictClef = dictionnaireDes16Clefs()
     tab_G = []
     tab_D = []
@@ -190,15 +174,15 @@ def calcule1Ronde(message,ronde):
         x = int(str(blocDe6Bits[i][0])+str(blocDe6Bits[i][5]),2)
         y = int(str(blocDe6Bits[i][1])+str(blocDe6Bits[i][2])+str(blocDe6Bits[i][3])+str(blocDe6Bits[i][4]),2)
        
-        longueur = len(bin(X["S"][i-1][x][y])[2:])
+        longueur = len(bin(S[i-1][x][y])[2:])
         if longueur == 1 :
-            blocDe6bitsResult[i] = '000' + bin(X["S"][i-1][x][y])[2:]
+            blocDe6bitsResult[i] = '000' + bin(S[i-1][x][y])[2:]
         elif longueur == 2 :
-            blocDe6bitsResult[i] = '00' + bin(X["S"][i-1][x][y])[2:]
+            blocDe6bitsResult[i] = '00' + bin(S[i-1][x][y])[2:]
         elif longueur == 3 :
-            blocDe6bitsResult[i] = '0' + bin(X["S"][i-1][x][y])[2:]
+            blocDe6bitsResult[i] = '0' + bin(S[i-1][x][y])[2:]
         else :
-            blocDe6bitsResult[i] = bin(X["S"][i-1][x][y])[2:]
+            blocDe6bitsResult[i] = bin(S[i-1][x][y])[2:]
         i+=1
  
     concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
@@ -239,8 +223,6 @@ def chiffrer(message):
 def calcule1RondeDéchiffrement(message,ronde):
     i=0
     xor=[]
-    X = dict()
-    X=recupConstantesDES()
  
     dictClef = dictionnaireDes16Clefs()
     tab_G = []
@@ -282,15 +264,15 @@ def calcule1RondeDéchiffrement(message,ronde):
         x = int(str(blocDe6Bits[i][0])+str(blocDe6Bits[i][5]),2)
         y = int(str(blocDe6Bits[i][1])+str(blocDe6Bits[i][2])+str(blocDe6Bits[i][3])+str(blocDe6Bits[i][4]),2)
        
-        longueur = len(bin(X["S"][i-1][x][y])[2:])
+        longueur = len(bin(S[i-1][x][y])[2:])
         if longueur == 1 :
-            blocDe6bitsResult[i] = '000' + bin(X["S"][i-1][x][y])[2:]
+            blocDe6bitsResult[i] = '000' + bin(S[i-1][x][y])[2:]
         elif longueur == 2 :
-            blocDe6bitsResult[i] = '00' + bin(X["S"][i-1][x][y])[2:]
+            blocDe6bitsResult[i] = '00' + bin(S[i-1][x][y])[2:]
         elif longueur == 3 :
-            blocDe6bitsResult[i] = '0' + bin(X["S"][i-1][x][y])[2:]
+            blocDe6bitsResult[i] = '0' + bin(S[i-1][x][y])[2:]
         else :
-            blocDe6bitsResult[i] = bin(X["S"][i-1][x][y])[2:]
+            blocDe6bitsResult[i] = bin(S[i-1][x][y])[2:]
         i+=1
  
     concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
