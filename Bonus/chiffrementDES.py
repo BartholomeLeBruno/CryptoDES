@@ -12,7 +12,7 @@ def listToString(s):
     
     # return string  
     return str1
-    
+
 def decallageAGauche(tab):
     result = []
     compt = 0
@@ -218,26 +218,10 @@ def calcule1Ronde(message,ronde):
     return tab_G+tab_D
  
 def calcule16Rondes(message):
-    i = 0
-    j = 0
-    tab_G = []
-    tab_D = []
-   
- 
+
     message = permutationInitiale(message)
- 
     for i in range (0,16):
-        resultatRonde = calcule1Ronde(message,i)
- 
-        for j in range(0,32):
-            tab_G.insert(j,resultatRonde[j])
-            tab_D.insert(j+32,resultatRonde[j+32])
-       
-        resultatRonde=[]
-        message = []
-        message = tab_G + tab_D
-        tab_D = []
-        tab_G = []
+        message = calcule1Ronde(message,i)
    
     return message
  
@@ -251,9 +235,6 @@ def chiffrer(message):
         messageChiffrer +=permutationInitialeInverse(resultatDes16Rondes)
  
     return messageChiffrer
- 
- 
- 
  
 def calcule1RondeDéchiffrement(message,ronde):
     i=0
@@ -330,27 +311,14 @@ def calcule1RondeDéchiffrement(message,ronde):
     return tab_G+tab_D
  
 def calcule16RondesDéchiffrement(message):
-    i = 0
-    j = 0
-    tab_G = []
-    tab_D = []
- 
+
     message = permutationInitiale(message)
     for i in range (0,16):
-        resultatRonde = calcule1RondeDéchiffrement(message,15-i)
-        for j in range(0,32):
-            tab_G.insert(j,resultatRonde[j])
-            tab_D.insert(j+32,resultatRonde[j+32])
-       
-        resultatRonde=[]
-        message = []
-        message = tab_G + tab_D
-        tab_D = []
-        tab_G = []
-   
+        message = calcule1RondeDéchiffrement(message,15-i)
+
     return message
  
-def déchiffrer(message):
+def dechiffrer(message):
    
     blocsDe64Bits = decouperPar64(message)
     messageChiffrer=[]
@@ -366,9 +334,11 @@ f = open("Chiffrement_DES_de_1.txt", "r")
 txt = f.read()
 f.close()
  
-txt_binaire = conv_bin(txt)
-txt_binaire_chiffre = déchiffrer(txt_binaire)
-#print(déchiffrer("1000100000110110101000010001001111001011011000001001010010010000"))
-txt_binaire_chiffre=map(str,txt_binaire_chiffre)
-txtt=''.join(str(a) for a in  txt_binaire_chiffre)
-print(nib_vnoc(txtt))
+#txt_binaire = conv_bin(txt)
+#txt_binaire_chiffre = déchiffrer(txt_binaire)
+print(dechiffrer("1000100000110110101000010001001111001011011000001001010010010000"))
+print(chiffrer("1101110010111011110001001101010111100110111101111100001000110010"))
+
+#txt_binaire_chiffre=map(str,txt_binaire_chiffre)
+#txtt=''.join(str(a) for a in  txt_binaire_chiffre)
+#print(nib_vnoc(txtt))
