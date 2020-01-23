@@ -36,8 +36,6 @@ def dictionnaireDes16Clefs() :
     txt = f.read()
     f.close()
  
-    sdl = '\n'
- 
     clef = dict()
     tab = []
     tab_CP2=[]
@@ -103,7 +101,6 @@ def permutationInitiale(message):
 def permutationInitialeInverse(message):
     result = []
     compt = 0
- 
     while compt < len(PI_I[0]) :
         result.insert(compt,int(message[PI_I[0][compt]]))
         compt+=1
@@ -111,13 +108,8 @@ def permutationInitialeInverse(message):
     return result
  
 def expansion(message):
-    X = dict()
     result = []
-    X=recupConstantesDES()
- 
-    E = X["E"]
     compt = 0
- 
     while compt < len(E[0]) :
         result.insert(compt,int(message[E[0][compt]]))
         compt+=1
@@ -127,18 +119,22 @@ def expansion(message):
 def permutationDesRondes(message):
     result = []
     compt = 0
- 
     while compt < len(PERM[0]) :
         result.insert(compt,int(message[PERM[0][compt]]))
         compt+=1
    
     return result
  
-def calcule1Ronde(message,ronde):
-    dictClef = dictionnaireDes16Clefs()
+def calcule1RondeChiffrement(message,ronde):
+    blocDe6Bits = dict()
+    blocDe6bitsResult = dict()
     tab_G = []
     tab_D = []
- 
+    tabTemp=[]
+    compt=0
+    paquetDe6=1
+
+    dictClef = dictionnaireDes16Clefs()
     for i in range(0,32):
         tab_G.insert(i,message[i])
         tab_D.insert(i+32,message[i+32])
@@ -148,23 +144,15 @@ def calcule1Ronde(message,ronde):
    
     xor = XOR(clef,messageApresExpansion)
  
-    blocDe6Bits = dict()
-    tabTemp=[]
-    compt=0
-    paquetDe6=1
- 
     for i in range(0,48):
         tabTemp.insert(compt,xor[i])
         compt+=1
- 
         if compt%6 == 0:
             blocDe6Bits[paquetDe6]=tabTemp
             tabTemp=[]
             paquetDe6+=1
             compt=0
    
-    blocDe6bitsResult = dict()
- 
     i=1
     while i <= 8:
         x = int(str(blocDe6Bits[i][0])+str(blocDe6Bits[i][5]),2)
@@ -182,20 +170,18 @@ def calcule1Ronde(message,ronde):
         i+=1
  
     concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
-   
     messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
- 
     xor = XOR(messageApresPermutationRondes,tab_G)
     tab_G = tab_D
     tab_D = xor
  
     return tab_G+tab_D
  
-def calcule16Rondes(message):
+def calcule16RondesChiffrement(message):
 
     message = permutationInitiale(message)
     for i in range (0,16):
-        message = calcule1Ronde(message,i)
+        message = calcule1RondeChiffrement(message,i)
    
     return message
  
@@ -205,17 +191,18 @@ def chiffrer(message):
     messageChiffrer=[]
  
     for i in range (0,len(blocsDe64Bits)):
-        resultatDes16Rondes = calcule16Rondes(blocsDe64Bits[i])
+        resultatDes16Rondes = calcule16RondesChiffrement(blocsDe64Bits[i])
         messageChiffrer +=permutationInitialeInverse(resultatDes16Rondes)
  
     return messageChiffrer
  
-def calcule1RondeDéchiffrement(message,ronde):
-    i=0
-    dictClef = dictionnaireDes16Clefs()
+def calcule1RondeDechiffrement(message,ronde):
     tab_G = []
     tab_D = []
- 
+    blocDe6bitsResult = dict()
+    blocDe6Bits = dict()
+
+    dictClef = dictionnaireDes16Clefs()
     for i in range(0,32):
         tab_G.insert(i,message[i])
         tab_D.insert(i+32,message[i+32])
@@ -224,7 +211,6 @@ def calcule1RondeDéchiffrement(message,ronde):
     clef = dictClef[ronde]
 
     xor=XOR(clef,messageApresExpansion) 
-    blocDe6Bits = dict()
     tabTemp=[]
     compt=0
     paquetDe6=1
@@ -238,8 +224,6 @@ def calcule1RondeDéchiffrement(message,ronde):
             tabTemp=[]
             paquetDe6+=1
             compt=0
-   
-    blocDe6bitsResult = dict()
  
     i=1
     while i <= 8:
@@ -258,34 +242,31 @@ def calcule1RondeDéchiffrement(message,ronde):
         i+=1
  
     concatBlocDe6Bits = blocDe6bitsResult[1] +blocDe6bitsResult[2] +blocDe6bitsResult[3] +blocDe6bitsResult[4] +blocDe6bitsResult[5] +blocDe6bitsResult[6] +blocDe6bitsResult[7] +blocDe6bitsResult[8]
-   
     messageApresPermutationRondes = permutationDesRondes(concatBlocDe6Bits)
- 
     xor = XOR(messageApresPermutationRondes,tab_D)
     tab_D = tab_G
     tab_G = xor
-   
- 
+
     return tab_G+tab_D
  
-def calcule16RondesDéchiffrement(message):
+def calcule16RondesDechiffrement(message):
 
     message = permutationInitiale(message)
     for i in range (0,16):
-        message = calcule1RondeDéchiffrement(message,15-i)
+        message = calcule1RondeDechiffrement(message,15-i)
 
     return message
  
 def dechiffrer(message):
    
     blocsDe64Bits = decouperPar64(message)
-    messageChiffrer=[]
+    messageDechiffrer=[]
  
     for i in range (0,len(blocsDe64Bits)):
-        resultatDes16Rondes = calcule16RondesDéchiffrement(blocsDe64Bits[i])
-        messageChiffrer +=permutationInitialeInverse(resultatDes16Rondes)
+        resultatDes16Rondes = calcule16RondesDechiffrement(blocsDe64Bits[i])
+        messageDechiffrer +=permutationInitialeInverse(resultatDes16Rondes)
    
-    return messageChiffrer
+    return messageDechiffrer
  
  
 f = open("Chiffrement_DES_de_1.txt", "r")
